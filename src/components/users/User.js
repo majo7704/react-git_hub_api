@@ -1,25 +1,17 @@
-import React, { Component } from 'react'
+import React, { useEffect } from 'react'
 import Spinner from '../layout/Spinner'
 import Repos  from '../repos/Repos'
 import PropTypes from 'prop-types'
 import {Link} from 'react-router-dom'
 
 
-export default class User extends Component {
-  componentDidMount() {
-    this.props.getUser(this.props.match.params.login)
-    this.props.getUserRepos(this.props.match.params.login)
-    //login from the path
-  }
-  static propTypes = {
-    loading: PropTypes.bool,
-    user: PropTypes.object.isRequired,
-    repos: PropTypes.array.isRequired,
-    getUser: PropTypes.func.isRequired,
-    getUserRepos: PropTypes.func.isRequired
-  }
-
-  render() {
+const User = ({ user, loading, getUser, getUserRepos, repos, match }) => {
+  useEffect(() => {
+    getUser(match.params.login)
+    getUserRepos(match.params.login)
+    //eslint-disable-next-line
+}, [])// brackets stop useEffect constantly running in the loop, special conditions when this has to run, mimics the behaviour of componentDidMount
+  
     const {
       name,
       avatar_url,
@@ -33,8 +25,8 @@ export default class User extends Component {
       following,
       public_repos,
       public_gists,
-      hireable } = this.props.user
-    const { loading, repos } = this.props
+      hireable } = user
+    
     if (loading) return <Spinner/>
     return (
       <>
@@ -47,7 +39,7 @@ export default class User extends Component {
           )}
         <div className="card grid-2">
           <div className="all-center">
-            <img src={avatar_url} className="round-img" style={{ width: '150px' }}
+            <img src={avatar_url} className="round-img" style={{ width: '150px' }} alt=''
             />
             <h1>{name}</h1>
             <p>{location}</p>
@@ -85,5 +77,14 @@ export default class User extends Component {
         <Repos repos={repos}/>
       </>
     )
-  }
 }
+User.propTypes = {
+  loading: PropTypes.bool,
+  user: PropTypes.object.isRequired,
+  repos: PropTypes.array.isRequired,
+  getUser: PropTypes.func.isRequired,
+  getUserRepos: PropTypes.func.isRequired
+}
+
+
+export default User;
